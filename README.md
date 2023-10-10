@@ -1,6 +1,8 @@
 # esphome-smart-battery
 Control DIY smart battery using JBD BMS, external balancer. Monitor it with environment sensors and display.
 
+<img src="images/header.png" alt="Project logo" height="300" width="auto">
+
 ## Hardware
 [Detailed hardware description](pcb/README.md)
 
