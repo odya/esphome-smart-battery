@@ -1,0 +1,26 @@
+substitutions:
+  device_name: "smart-battery"
+  node_name: "Smart Battery"
+  node_id: smart_battery
+  mac_address: a5:c2:37:00:f0:fc
+  cell_volt_limit_min: "2.7" # Must be equal to BMS config setting
+  cell_volt_limit_max: "3.55" # Must be equal to BMS config setting
+  balancer_switch_pin: GPIO25
+  i2c_sda_pin: GPIO21
+  i2c_scl_pin: GPIO22
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: esp-idf
+
+packages:
+  main: !include smart-battery/main.yaml
+  # You can replace next 2 lines with your common configs for all devices
+  common_system: !include includes/common_system.yaml
+  common_sensors: !include includes/common_sensors.yaml
+
+logger:
+  level: WARNING
+  logs:
+    component: ERROR # Fix for issue #4717 "Component xxxxxx took a long time for an operation"

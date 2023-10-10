@@ -1,0 +1,211 @@
+globals:
+   - id: cell_volt_limit_min
+     type: float
+     restore_value: no
+     initial_value: "2.7"
+   - id: cell_volt_limit_max
+     type: float
+     restore_value: no
+     initial_value: "3.55"
+
+esphome:
+  on_boot:
+    priority: 500
+    then:
+      - globals.set:
+          id: cell_volt_limit_min
+          value: !lambda |-
+            return std::stof(to_string("${cell_volt_limit_min}").c_str());
+      - globals.set:
+          id: cell_volt_limit_max
+          value: !lambda |-
+            return std::stof(to_string("${cell_volt_limit_max}").c_str());
+
+ble_client:
+  - id: client0
+    mac_address: ${mac_address}
+    on_connect:
+      then:
+        - lambda: |-
+            ESP_LOGI("ble_client_lambda", "Connected to BLE device");
+    on_disconnect:
+      then:
+        - lambda: |-
+            ESP_LOGI("ble_client_lambda", "Disconnected from BLE device");
+
+jbd_bms_ble:
+  - id: bms0
+    ble_client_id: client0
+    update_interval: 2s
+
+binary_sensor:
+  - platform: jbd_bms_ble
+    jbd_bms_ble_id: bms0
+    balancing:
+      name: "Balancing"
+    charging:
+      name: "Charging"
+      id: charging
+    discharging:
+      name: "Discharging"
+      id: discharging
+    online_status:
+      name: "Online"
+
+sensor:
+  - platform: ble_client
+    ble_client_id: client0
+    type: rssi
+    name: "BMS BLE RSSI"
+    entity_category: diagnostic
+
+  - platform: jbd_bms_ble
+    jbd_bms_ble_id: bms0
+    current:
+      name: "Current"
+      id: current
+      filters: &numfilters
+        - quantile:
+            window_size: 5
+            send_every: 5
+            send_first_at: 5
+            quantile: .9
+#        - throttle_average: 60s
+#        - heartbeat: 60s
+    power:
+      name: "Power"
+      id: power
+      filters: *numfilters
+    charging_power:
+      name: "Charging power"
+      id: charging_power
+      filters: *numfilters
+    discharging_power:
+      name: "Discharging power"
+      id: discharging_power
+      filters: *numfilters
+    state_of_charge:
+      name: "State of charge"
+      id: state_of_charge
+      filters: *numfilters
+#    nominal_capacity:
+#      name: "Nominal capacity"
+#      filters: *numfilters
+    charging_cycles:
+      name: "Charging cycles"
+      filters: *numfilters
+    capacity_remaining:
+      name: "Capacity remaining"
+      filters: *numfilters
+    battery_cycle_capacity:
+      name: "Battery cycle capacity"
+      filters: *numfilters
+    total_voltage:
+      name: "Total voltage"
+      id: total_voltage
+      filters: *numfilters
+    average_cell_voltage:
+      name: "Average cell voltage"
+      filters: *numfilters
+    delta_cell_voltage:
+      name: "Delta cell voltage"
+      id: delta_cell_voltage
+      unit_of_measurement: mV
+      filters: *numfilters
+    min_cell_voltage:
+      name: "Min cell voltage"
+      id: min_cell_voltage
+      filters: *numfilters
+    max_cell_voltage:
+      name: "Max cell voltage"
+      id: max_cell_voltage
+      filters: *numfilters
+    min_voltage_cell:
+      name: "Min voltage cell"
+      id: min_voltage_cell
+      filters: *numfilters
+    max_voltage_cell:
+      name: "Max voltage cell"
+      id: max_voltage_cell
+      filters: *numfilters
+    temperature_1:
+      name: "Temperature 1"
+      id: temp_1
+      filters: *numfilters
+    temperature_2:
+      name: "Temperature 2"
+      id: temp_2
+      filters: *numfilters
+    temperature_3:
+      name: "Temperature 3"
+      id: temp_3
+      filters: *numfilters
+    # temperature_4:
+    #   name: "Temperature 4"
+    # temperature_5:
+    #   name: "Temperature 5"
+    # temperature_6:
+    #   name: "Temperature 6"
+    cell_voltage_1:
+      name: "Cell voltage 1"
+      id: cell_voltage_1
+      accuracy_decimals: 3
+      filters: *numfilters
+    cell_voltage_2:
+      name: "Cell voltage 2"
+      id: cell_voltage_2
+      accuracy_decimals: 3
+      filters: *numfilters
+    cell_voltage_3:
+      name: "Cell voltage 3"
+      id: cell_voltage_3
+      filters: *numfilters
+    cell_voltage_4:
+      name: "Cell voltage 4"
+      id: cell_voltage_4
+      filters: *numfilters
+    cell_voltage_5:
+      name: "Cell voltage 5"
+      id: cell_voltage_5
+      filters: *numfilters
+    cell_voltage_6:
+      name: "Cell voltage 6"
+      id: cell_voltage_6
+      filters: *numfilters
+    cell_voltage_7:
+      name: "Cell voltage 7"
+      id: cell_voltage_7
+      filters: *numfilters
+    cell_voltage_8:
+      name: "Cell voltage 8"
+      id: cell_voltage_8
+      filters: *numfilters
+    operation_status_bitmask:
+      name: "Operation status bitmask"
+    errors_bitmask:
+      name: "Errors bitmask"
+    balancer_status_bitmask:
+      name: "Balancer status bitmask"
+
+text_sensor:
+  - platform: jbd_bms_ble
+    jbd_bms_ble_id: bms0
+    errors:
+      name: "Errors"
+      id: errors
+    operation_status:
+      name: "Operation status"
+
+switch:
+  - platform: ble_client
+    ble_client_id: client0
+    name: "BLE Enabled"
+    entity_category: config
+
+  - platform: jbd_bms_ble
+    jbd_bms_ble_id: bms0
+    charging:
+      name: "Charging"
+    discharging:
+      name: "Discharging"
+

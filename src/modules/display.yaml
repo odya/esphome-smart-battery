@@ -1,0 +1,177 @@
+esphome:
+  on_boot:
+    priority: 600
+    then:
+      - lambda: |-
+          if(id(my_display).is_ready()) {
+            id(wake_scroll_screens_sleep).execute();
+          }
+script:
+  - id: wake_scroll_screens_sleep
+    mode: restart
+    then:
+      - display.page.show: page1
+      - component.update: my_display
+      - lambda: |-
+          id(my_display).turn_on();
+      - delay: 10s
+      - repeat:
+          count: 5
+          then:
+            - display.page.show_next: my_display
+            - delay: 10s
+      - lambda: |-
+          id(my_display).turn_off();
+
+interval:
+  - interval: 2s
+    then:
+      - lambda: |-
+          if (id(my_display).is_on() && id(my_display).is_ready()) {
+            id(my_display).update();
+          }
+
+binary_sensor:
+  - platform: gpio
+    name: "Button 1"
+    id: button_1
+    pin:
+      number: GPIO26
+      inverted: true
+      mode:
+        input: true
+        pullup: true
+    entity_category: diagnostic
+    filters:
+      - delayed_on: 100ms
+    on_click:
+      min_length: 100ms
+      max_length: 2000ms
+      then:
+        - lambda: ESP_LOGI("display_button", "Clicked");
+        - script.execute: wake_scroll_screens_sleep
+
+button:
+  # Debug button
+  - platform: template
+    name: "Button Click"
+    on_press:
+      - lambda: |-
+          id(button_1).publish_state(true);
+          delay(500);
+          id(button_1).publish_state(false);
+
+font:
+  - file: "gfonts://Roboto@bold"
+    id: font_roboto_lb
+    size: 20
+    glyphs: '1234567890 naof'
+  - file: "gfonts://Roboto"
+    id: font_roboto_s
+    size: 12
+  - file: "${device_name}/fonts/mdi.ttf"
+    id: font_mdi_l
+    size: 20
+    glyphs: [
+      # Battery
+      '󰂎', # F008E mdi-battery-outline
+      '󰁺', # F007A mdi-battery-10
+      '󰁻', # F007B mdi-battery-20
+      '󰁼', # F007C mdi-battery-30
+      '󰁽', # F007D mdi-battery-40
+      '󰁾', # F007E mdi-battery-50
+      '󰁿', # F007F mdi-battery-60
+      '󰂀', # F0080 mdi-battery-70
+      '󰂁', # F0081 mdi-battery-80
+      '󰂂', # F0082 mdi-battery-90
+      '󰁹', # F0079 mdi-battery 100
+      ]
+  - file: "${device_name}/fonts/mdi.ttf"
+    id: font_mdi_m
+    size: 16
+    glyphs: [
+      '󰶡', # transfer-down
+      '󰶣', # transfer-up
+      ]
+  - file: "${device_name}/fonts/mdi.ttf"
+    id: font_mdi_s
+    size: 14
+    glyphs: [
+      '󰤨', # wifi-strength-4
+      '󰤥', # wifi-strength-3
+      '󰤢', # wifi-strength-2
+      '󰤟', # wifi-strength-1
+      '󰤫', # wifi-strength-alert-outline
+    ]
+  - file: "${device_name}/fonts/mdi.ttf"
+    id: font_mdi_xs
+    size: 12
+    glyphs: [
+      '󰇂', # delta
+    ]
+
+display:
+  - platform: ssd1306_i2c
+    id: my_display
+    model: "SSD1306 128x64"
+    # reset_pin: D0
+    address: 0x3C
+    rotation: 90°
+    pages:
+      - id: page1
+        lambda: |-
+          it.printf(0, 0, id(font_roboto_lb), "%3.0f", id(state_of_charge).state);
+          it.print(34, 0, id(font_roboto_s), "%"); 
+    
+          /* Battery Voltage */
+          if(id(state_of_charge).has_state()) {
+            it.print(62, 9, id(font_mdi_l), TextAlign::TOP_RIGHT, getSocGlyph(id(state_of_charge).state));
+          } 
+    
+          it.printf(2, 21, id(font_roboto_s), "%.1fV", id(total_voltage).state);
+    
+          it.line(0, 36, 64, 36);
+    
+          it.print(-3, 42, id(font_mdi_m), TextAlign::TOP_LEFT, "󰶡");
+          if (id(charging).state > 0.1) {
+            it.printf(10, 38, id(font_roboto_lb), "%4.0f", id(charging_power).state);
+            it.print(64, 37, id(font_roboto_s), TextAlign::TOP_RIGHT, "w");
+          } else {
+            it.print(60, 38, id(font_roboto_lb), TextAlign::TOP_RIGHT, "off");
+          }
+          
+          it.print(-3, 63, id(font_mdi_m), TextAlign::TOP_LEFT, "󰶣");
+          if (id(discharging).state > 0.1) {
+            it.printf(10, 58, id(font_roboto_lb), "%4.0f", id(discharging_power).state);
+            it.print(64, 57, id(font_roboto_s), TextAlign::TOP_RIGHT, "w"); 
+          } else {
+            it.print(60, 58, id(font_roboto_lb), TextAlign::TOP_RIGHT, "off");
+          }
+          
+          it.printf(0, 81, id(font_roboto_s), "%3.1fA", id(current).state);
+          it.printf(64, 81, id(font_roboto_s), TextAlign::TOP_RIGHT, "%3.1f°", id(temp_1).state);
+          
+          it.line(0, 96, 64, 96);
+          
+          it.printf(0, 98, id(font_roboto_s), "%3.1f°", id(temp_2).state);
+          it.printf(64, 98, id(font_roboto_s), TextAlign::TOP_RIGHT, "%3.1f°", id(temp_3).state);
+          
+          if (id(errors).has_state() && !id(errors).state.empty()) {
+            invPrint(it, 0, 116, id(font_roboto_s), id(errors).state.c_str());
+          } else {
+            it.print(0, 115, id(font_mdi_s), getWifiGlyph(id(wifi_rssi).state));
+          }
+
+      - id: page2
+        lambda: |-
+          renderCellRow(it, id(font_roboto_s), 1, id(cell_voltage_1).state);
+          renderCellRow(it, id(font_roboto_s), 2, id(cell_voltage_2).state);
+          renderCellRow(it, id(font_roboto_s), 3, id(cell_voltage_3).state);
+          renderCellRow(it, id(font_roboto_s), 4, id(cell_voltage_4).state);
+          renderCellRow(it, id(font_roboto_s), 5, id(cell_voltage_5).state);
+          renderCellRow(it, id(font_roboto_s), 6, id(cell_voltage_6).state);
+          renderCellRow(it, id(font_roboto_s), 7, id(cell_voltage_7).state);
+          renderCellRow(it, id(font_roboto_s), 8, id(cell_voltage_8).state);
+          
+          it.print(10, 113, id(font_mdi_xs), "󰇂"); 
+          it.printf(24, 110, id(font_roboto_s), "%3.2fV", id(delta_cell_voltage).state);

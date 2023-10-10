@@ -1,0 +1,12 @@
+debug:
+  update_interval: 10s
+
+sensor:
+  - platform: debug
+    free:
+      name: "Heap Free"
+
+switch:
+  - platform: restart
+    name: "Restart"
+    entity_category: config
