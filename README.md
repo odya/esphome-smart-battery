@@ -3,6 +3,13 @@ Control DIY smart battery using JBD BMS, external balancer. Monitor it with envi
 
 <img src="images/header.png" alt="Project logo" height="300" width="auto">
 
+## Features
+- Grabs all BMS parameters by bluetooth and transfers it into Home Assistant
+- Auto balance with external balancer with flexible logic setup
+- Separate screen with button on battery case 
+- Fancy card for lovelace
+- Adjusted SoC calculation
+
 ## Hardware
 [Detailed hardware description](pcb/README.md)
 
@@ -57,3 +64,6 @@ sensor:
           min_value: 0
           max_value: 100
 ```
+
+## References & thanks
+- This project is built around [syssi/esphome-jbd-bms](https://github.com/syssi/esphome-jbd-bms) at its core.
