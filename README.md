@@ -13,3 +13,37 @@ Control DIY smart battery using JBD BMS, external balancer. Monitor it with envi
 4) Create file `smart-battery.yaml` in the esphome config directory root and copy contents of [example config](/examples/smart-battery.yaml)
 5) Edit substitutions & customize `smart-battery.yaml`. You can add contents of [common_system](/examples/common_system.yaml) & [common_sensors](/examples/common_sensors.yaml) to this file or include them separately following the example.
 6) Flash firmware to your ESP32
+
+## Adjusted SoC
+ou can calculate the adjusted "State of Charge" value using the "calibrate_*" filters of ESPHome. To do this, edit the template sensor "Adjusted SoC" and provide your mapping for cell voltage values in the `smart-battery.yaml` config. This can be useful for setting a smoother charge/discharge curve or for optimizing the experience working with an inverter.
+```
+sensor:
+  - platform: template
+    name: "Adjusted SoC"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    device_class: battery
+    state_class: measurement
+    update_interval: 10s
+    lambda: |-
+      return id(average_cell_voltage).state;
+    filters:
+      - calibrate_linear:
+         method: exact
+         datapoints:
+          - 2.800 -> 0.0
+          - 3.144 -> 10.0
+          - 3.170 -> 20.0
+          - 3.188 -> 30.0
+          - 3.208 -> 40.0
+          - 3.214 -> 50.0
+          - 3.220 -> 60.0
+          - 3.226 -> 70.0
+          - 3.233 -> 80.0
+          - 3.250 -> 90.0
+          - 3.388 -> 100.0
+          - 3.500 -> 100.0
+      - clamp:
+          min_value: 0
+          max_value: 100
+```

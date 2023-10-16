@@ -1,6 +1,6 @@
 esphome:
   on_boot:
-    priority: 600
+    priority: -200
     then:
       - lambda: |-
           if(id(my_display).is_ready()) {
@@ -8,7 +8,6 @@ esphome:
           }
 script:
   - id: wake_scroll_screens_sleep
-    mode: restart
     then:
       - display.page.show: page1
       - component.update: my_display
@@ -16,7 +15,7 @@ script:
           id(my_display).turn_on();
       - delay: 10s
       - repeat:
-          count: 5
+          count: 3
           then:
             - display.page.show_next: my_display
             - delay: 10s
@@ -43,10 +42,10 @@ binary_sensor:
         pullup: true
     entity_category: diagnostic
     filters:
-      - delayed_on: 100ms
+      - delayed_on_off: 300ms
     on_click:
       min_length: 100ms
-      max_length: 2000ms
+      max_length: 3000ms
       then:
         - lambda: ESP_LOGI("display_button", "Clicked");
         - script.execute: wake_scroll_screens_sleep
