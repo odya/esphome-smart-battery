@@ -2,24 +2,11 @@ globals:
    - id: cell_volt_limit_min
      type: float
      restore_value: no
-     initial_value: "2.7"
+     initial_value: ${cell_volt_limit_min}
    - id: cell_volt_limit_max
      type: float
      restore_value: no
-     initial_value: "3.55"
-
-esphome:
-  on_boot:
-    priority: 500
-    then:
-      - globals.set:
-          id: cell_volt_limit_min
-          value: !lambda |-
-            return std::stof(to_string("${cell_volt_limit_min}").c_str());
-      - globals.set:
-          id: cell_volt_limit_max
-          value: !lambda |-
-            return std::stof(to_string("${cell_volt_limit_max}").c_str());
+     initial_value: ${cell_volt_limit_max}
 
 ble_client:
   - id: client0
@@ -36,7 +23,7 @@ ble_client:
 jbd_bms_ble:
   - id: bms0
     ble_client_id: client0
-    update_interval: 2s
+    update_interval: 10s
 
 binary_sensor:
   - platform: jbd_bms_ble
@@ -65,13 +52,7 @@ sensor:
       name: "Current"
       id: current
       filters: &numfilters
-        - quantile:
-            window_size: 5
-            send_every: 5
-            send_first_at: 5
-            quantile: .9
-#        - throttle_average: 60s
-#        - heartbeat: 60s
+        - timeout: 60s
     power:
       name: "Power"
       id: power
@@ -88,9 +69,9 @@ sensor:
       name: "State of charge"
       id: state_of_charge
       filters: *numfilters
-#    nominal_capacity:
-#      name: "Nominal capacity"
-#      filters: *numfilters
+    nominal_capacity:
+      name: "Nominal capacity"
+      filters: *numfilters
     charging_cycles:
       name: "Charging cycles"
       filters: *numfilters
@@ -106,12 +87,18 @@ sensor:
       filters: *numfilters
     average_cell_voltage:
       name: "Average cell voltage"
+      id: average_cell_voltage
       filters: *numfilters
     delta_cell_voltage:
       name: "Delta cell voltage"
       id: delta_cell_voltage
       unit_of_measurement: mV
-      filters: *numfilters
+      filters:
+        - <<: *numfilters
+        - multiply: 1000
+      on_value:
+        then:
+          - script.execute: try_auto_balance
     min_cell_voltage:
       name: "Min cell voltage"
       id: min_cell_voltage

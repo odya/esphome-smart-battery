@@ -1,0 +1,61 @@
+script:
+  - id: try_auto_balance
+    then:
+      - if:
+          condition:
+            - switch.is_on: auto_balance
+            - or:
+                - for:
+                    time: 10sec
+                    condition:
+                      sensor.in_range:
+                        id: delta_cell_voltage
+                        above: ${balancer_start_delta_mv}
+                - sensor.in_range:
+                    id: current
+                    above: 2.0
+          then:
+            - switch.turn_on: balancer_relay
+      - if:
+          condition:
+            - switch.is_on: auto_balance
+            - for:
+                time: ${balancer_min_work_time}
+                condition:
+                  sensor.in_range:
+                    id: delta_cell_voltage
+                    below: ${balancer_stop_delta_mv}
+            - sensor.in_range:
+                id: current
+                below: 2.0
+          then:
+            - switch.turn_off: balancer_relay
+
+switch:
+  - platform: gpio
+    name: "Balancer Relay"
+    id: balancer_relay
+    internal: true
+    pin:
+      number: ${balancer_relay_pin}
+      inverted: false
+      drive_strength: 20mA
+      mode:
+        output: true
+        pullup: true
+
+  - platform: template
+    name: "Auto Balance"
+    id: auto_balance
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+binary_sensor:
+  - platform: template
+    name: "Balancing External"
+    lambda: |-
+      if (id(balancer_relay).state) {
+        return true;
+      } else {
+        return false;
+      }

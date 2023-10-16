@@ -5,12 +5,15 @@ esphome:
   includes:
     - "${device_name}/helpers"
   project:
-    name: "syssi.esphome-jbd-bms"
-    version: 1.5.0
+    name: "odya.esphome-smart-battery"
+    version: 1.6.0
 
 packages:
-  battery: !include {
-    file: modules/battery.yaml
+  bms: !include {
+    file: modules/bms.yaml
+  }
+  balancer: !include {
+    file: modules/balancer.yaml
   }
   display: !include {
     file: modules/display.yaml
@@ -29,17 +32,6 @@ i2c:
   scl: ${i2c_scl_pin}
 #  frequency: 100kHz
   scan: false
-
-switch:
-  - platform: gpio
-    name: "Balancer Switch"
-    pin:
-      number: ${balancer_switch_pin}
-      inverted: false
-      drive_strength: 20mA
-      mode:
-        output: true
-        pullup: true
 
 sensor:
   - platform: htu21d
