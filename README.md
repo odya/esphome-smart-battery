@@ -16,11 +16,13 @@ Control DIY smart battery using JBD BMS, external balancer. Monitor it with envi
 
 ## Battery card
 For easy battery control in Home Assistant, you can use the [following snippet](/battery-card/battery-card-example.yaml). It compiles all the essential battery sensors and controls in a compact manner. The following custom plugins are used: [bar-card](https://github.com/custom-cards/bar-card), [stack-in-card](https://github.com/custom-cards/stack-in-card), [tabbed-card](https://github.com/kinghat/tabbed-card), [text-divider-row](https://github.com/iantrich/text-divider-row).
-<div vertical-align="top">
-    <img src="battery-card/screenshots/battery-card-tab1.png" alt="Battery card tab1 screenshot" width="250" height="auto">
-    <img src="battery-card/screenshots/battery-card-tab2.png" alt="Battery card tab2 screenshot" width="250" height="auto">
-    <img src="battery-card/screenshots/battery-card-tab3.png" alt="Battery card tab3 screenshot" width="250" height="auto">
-</div>
+<table border="0">
+<tr>
+<td valign="top"><img src="battery-card/screenshots/battery-card-tab1.png" alt="Battery card tab1 screenshot" width="250" height="auto"></td>
+<td valign="top"><img src="battery-card/screenshots/battery-card-tab2.png" alt="Battery card tab2 screenshot" width="250" height="auto"></td>
+<td valign="top"><img src="battery-card/screenshots/battery-card-tab3.png" alt="Battery card tab3 screenshot" width="250" height="auto"></td>
+</tr>
+</table>
 
 ## Adjusted SoC
 ou can calculate the adjusted "State of Charge" value using the "calibrate_*" filters of ESPHome. To do this, edit the template sensor "Adjusted SoC" and provide your mapping for cell voltage values in the `smart-battery.yaml` config. This can be useful for setting a smoother charge/discharge curve or for optimizing the experience working with an inverter.
