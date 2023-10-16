@@ -1,0 +1,290 @@
+type: vertical-stack
+in_card: true
+cards:
+  - type: entities
+    title: Battery
+    entities:
+      - entity: sensor.powerwall_battery_adjusted_soc
+        name: Adjusted SoC
+        type: custom:bar-card
+        no_card: true
+        positions:
+          name: inside
+          minmax: 'off'
+          icon: 'off'
+          indicator: 'off'
+        entity_row: true
+        severity:
+          - color: Red
+            from: 0
+            to: 39
+          - color: Orange
+            from: 40
+            to: 69
+          - color: Green
+            from: 70
+            to: 100
+        style: |
+          bar-card-currentbar, bar-card-backgroundbar {
+            border-radius: 10px;
+          }
+          bar-card-value {
+            margin-right: auto;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0px 0px 2px black;
+            color: var(--text-primary-color)
+          }
+          bar-card-name {
+            font-size: 15px;
+            margin-left: 10px;
+            text-shadow: 0px 0px 2px black;
+            color: var(--text-primary-color)
+          }
+      - entity: sensor.powerwall_battery_discharging_power
+        name: Output Power
+        type: custom:bar-card
+        no_card: true
+        positions:
+          name: inside
+          minmax: 'off'
+          icon: 'off'
+          indicator: 'off'
+        entity_row: true
+        max: 2500
+        decimal: 0
+        severity:
+          - color: Orange
+            from: 2000
+            to: 2299
+          - color: Red
+            from: 2300
+            to: 2500
+        style: |
+          bar-card-currentbar, bar-card-backgroundbar {
+            border-radius: 10px; 
+          }
+          bar-card-value {
+            margin-right: auto;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 0px 0px 2px black;
+            color: var(--text-primary-color)
+          }
+          bar-card-name {
+            font-size: 15px;
+            margin-left: 10px;
+            text-shadow: 0px 0px 2px black;
+            color: var(--text-primary-color)
+          }
+  - type: conditional
+    conditions:
+      - entity: sensor.powerwall_battery_errors
+        state_not: ''
+    card:
+      type: markdown
+      content: >
+        <ha-alert alert-type="error">{{
+        state_attr('sensor.powerwall_battery_errors', 'state') }}</ha-alert>
+      style: |
+        ha-card {
+          margin: 10px 0;
+        }
+  - type: custom:stack-in-card
+    mode: vertical
+    no_card: true
+    card_mod:
+      style: |
+        ha-card {
+          margin-top: 10px !important;
+        }
+    cards:
+      - type: custom:tabbed-card
+        tabs:
+          - attributes:
+              label: General
+              icon: mdi:chart-bell-curve-cumulative
+            card:
+              type: vertical-stack
+              cards:
+                - type: grid
+                  square: false
+                  cards:
+                    - type: tile
+                      entity: sensor.powerwall_battery_total_voltage
+                      name: Voltage
+                      no_card: true
+                    - type: tile
+                      entity: sensor.powerwall_battery_current
+                      name: Current
+                      no_card: true
+                    - type: tile
+                      entity: sensor.powerwall_battery_power
+                      name: Power
+                      no_card: true
+                  columns: 3
+                - type: custom:text-divider-row
+                  text: Controls
+                  align: left
+                - type: grid
+                  square: false
+                  card_mod:
+                    style: |
+                      ha-title-info .info {
+                        padding: 12px 0 12px 12px;
+                      }
+                  cards:
+                    - type: tile
+                      entity: switch.powerwall_battery_charging
+                      name: Charging
+                      no_card: true
+                      icon_tap_action:
+                        action: more-info
+                    - type: tile
+                      entity: switch.powerwall_battery_discharging
+                      name: Discharging
+                      no_card: true
+                      icon_tap_action:
+                        action: more-info
+                    - type: tile
+                      entity: switch.powerwall_battery_auto_balance
+                      name: Auto Balance
+                      no_card: true
+                      icon_tap_action:
+                        action: more-info
+                    - type: tile
+                      entity: switch.powerwall_battery_ble_enabled
+                      name: BLE Enabled
+                      no_card: true
+                      icon_tap_action:
+                        action: more-info
+                  columns: 2
+          - attributes:
+              label: Cells
+              icon: mdi:fuel-cell
+            card:
+              type: vertical-stack
+              cards:
+                - type: glance
+                  no_card: true
+                  show_name: true
+                  show_icon: false
+                  show_state: true
+                  columns: 6
+                  card_mod:
+                    style: |
+                      ha-card {
+                        padding-top: 0;
+                      }
+                  entities:
+                    - entity: sensor.powerwall_battery_delta_cell_voltage
+                      name: Delta
+                    - entity: binary_sensor.powerwall_battery_balancing_external
+                      name: Balancing
+                    - entity: sensor.powerwall_battery_min_cell_voltage
+                      name: Min V
+                    - entity: sensor.powerwall_battery_min_voltage_cell
+                      name: Min Cell
+                    - entity: sensor.powerwall_battery_max_cell_voltage
+                      name: Max V
+                    - entity: sensor.powerwall_battery_max_voltage_cell
+                      name: Max Cell
+                - type: custom:bar-card
+                  no_card: true
+                  card_mod:
+                    style: |
+                      ha-card .card-content {
+                        padding-top: 0;
+                      }
+                  entities:
+                    - entity: sensor.powerwall_battery_cell_voltage_1
+                      name: Cell 1
+                    - entity: sensor.powerwall_battery_cell_voltage_2
+                      name: Cell 2
+                    - entity: sensor.powerwall_battery_cell_voltage_3
+                      name: Cell 3
+                    - entity: sensor.powerwall_battery_cell_voltage_4
+                      name: Cell 4
+                    - entity: sensor.powerwall_battery_cell_voltage_5
+                      name: Cell 5
+                    - entity: sensor.powerwall_battery_cell_voltage_6
+                      name: Cell 6
+                    - entity: sensor.powerwall_battery_cell_voltage_7
+                      name: Cell 7
+                    - entity: sensor.powerwall_battery_cell_voltage_8
+                      name: Cell 8
+                  direction: right
+                  stack: vertical
+                  height: 20px
+                  severity:
+                    - from: '2'
+                      to: '2.5'
+                      color: red
+                      hide: true
+                    - from: '2.5'
+                      to: '3'
+                      color: orange
+                      hide: true
+                    - from: '3'
+                      to: '1'
+                      color: green
+                      hide: true
+                  min: '2'
+                  max: '3.65'
+                  positions:
+                    icon: 'off'
+                    indicator: 'off'
+                    title: inside
+                    value: inside
+          - attributes:
+              label: Sensors
+              icon: mdi:eye-check
+            card:
+              type: grid
+              no_card: true
+              columns: 3
+              square: false
+              card_mod:
+                style: |
+                  ha-title-info .info {
+                    padding: 12px 0 12px 12px;
+                  }
+              cards:
+                - type: tile
+                  entity: sensor.powerwall_battery_temperature_1
+                  name: BMS Temp
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_temperature_2
+                  name: Temp 2
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_temperature_3
+                  name: Temp 3
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_box_temperature
+                  name: Box Temp
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_box_humidity
+                  name: Box Humidity
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_capacity_remaining
+                  name: Capacity
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_rssi
+                  name: RSSI
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_bms_ble_rssi
+                  name: BMS RSSI
+                  icon: mdi:bluetooth-audio
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_uptime
+                  name: Uptime
+                  no_card: true
+              state_color: true
