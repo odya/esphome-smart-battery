@@ -4,8 +4,8 @@ cards:
   - type: entities
     title: Battery
     entities:
-      - entity: sensor.powerwall_battery_adjusted_soc
-        name: Adjusted SoC
+      - entity: sensor.powerwall_battery_state_of_charge
+        name: State of Charge
         type: custom:bar-card
         no_card: true
         positions:
@@ -84,8 +84,8 @@ cards:
     card:
       type: markdown
       content: >
-        <ha-alert alert-type="error">{{
-        state_attr('sensor.powerwall_battery_errors', 'state') }}</ha-alert>
+        <ha-alert
+        alert-type="error">{{states('sensor.powerwall_battery_errors')}}</ha-alert>
       style: |
         ha-card {
           margin: 10px 0;
@@ -273,6 +273,18 @@ cards:
                 - type: tile
                   entity: sensor.powerwall_battery_capacity_remaining
                   name: Capacity
+                  no_card: true
+                - type: tile
+                  entity: binary_sensor.powerwall_battery_balancing
+                  name: Int. Balancing
+                  no_card: true
+                - type: tile
+                  entity: binary_sensor.powerwall_battery_balancing_external
+                  name: Ext. Balancing
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_adjusted_soc
+                  name: Adjusted SoC
                   no_card: true
                 - type: tile
                   entity: sensor.powerwall_battery_rssi
