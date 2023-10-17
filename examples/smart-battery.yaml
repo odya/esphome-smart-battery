@@ -28,32 +28,3 @@ logger:
   logs:
     component: ERROR # Fix for issue #4717 "Component xxxxxx took a long time for an operation"
 
-sensor:
-  - platform: template
-    name: "Adjusted SoC"
-    unit_of_measurement: "%"
-    accuracy_decimals: 0
-    device_class: battery
-    state_class: measurement
-    update_interval: 10s
-    lambda: |-
-      return id(average_cell_voltage).state;
-    filters:
-      - calibrate_linear:
-         method: exact
-         datapoints:
-          - 2.800 -> 0.0
-          - 3.144 -> 10.0
-          - 3.170 -> 20.0
-          - 3.188 -> 30.0
-          - 3.208 -> 40.0
-          - 3.214 -> 50.0
-          - 3.220 -> 60.0
-          - 3.226 -> 70.0
-          - 3.233 -> 80.0
-          - 3.250 -> 90.0
-          - 3.388 -> 100.0
-          - 3.500 -> 100.0
-      - clamp:
-          min_value: 0
-          max_value: 100
