@@ -24,7 +24,7 @@ packages:
   common_sensors: !include includes/common_sensors.yaml
 
 logger:
-  level: WARNING
+  level: WARN
   logs:
     component: ERROR # Fix for issue #4717 "Component xxxxxx took a long time for an operation"
 
