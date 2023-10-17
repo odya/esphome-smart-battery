@@ -40,3 +40,7 @@ sensor:
     humidity:
       name: "Box Humidity"
     update_interval: 10s
+
+  - platform: internal_temperature
+    name: "Controller Temperature"
+    update_interval: 10s
