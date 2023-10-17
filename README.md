@@ -22,7 +22,7 @@ Control DIY smart battery using JBD BMS, external balancer. Monitor it with envi
 6) Flash firmware to your ESP32
 
 ## Battery card
-For easy battery control in Home Assistant, you can use the [following snippet](/battery-card/battery-card-example.yaml). It compiles all the essential battery sensors and controls in a compact manner. The following custom plugins are used: [bar-card](https://github.com/custom-cards/bar-card), [stack-in-card](https://github.com/custom-cards/stack-in-card), [tabbed-card](https://github.com/kinghat/tabbed-card), [text-divider-row](https://github.com/iantrich/text-divider-row).
+For easy battery control in Home Assistant, you can use the [following snippet](/battery-card/battery-card-example.yaml). It compiles all the essential battery sensors and controls in a compact manner. The following custom plugins are used: [bar-card](https://github.com/custom-cards/bar-card), [stack-in-card](https://github.com/custom-cards/stack-in-card), [tabbed-card](https://github.com/kinghat/tabbed-card), [text-divider-row](https://github.com/iantrich/text-divider-row), [canary](https://github.com/jcwillox/lovelace-canary).
 <table border="0">
 <tr>
 <td valign="top"><img src="battery-card/screenshots/battery-card-tab1.png" alt="Battery card tab1 screenshot" width="250" height="auto"></td>

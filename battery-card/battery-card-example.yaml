@@ -135,13 +135,13 @@ cards:
                       }
                   cards:
                     - type: tile
-                      entity: switch.powerwall_battery_charging
+                      entity: switch.powerwall_battery_charging_port
                       name: Charging
                       no_card: true
                       icon_tap_action:
                         action: more-info
                     - type: tile
-                      entity: switch.powerwall_battery_discharging
+                      entity: switch.powerwall_battery_discharging_port
                       name: Discharging
                       no_card: true
                       icon_tap_action:
@@ -271,8 +271,8 @@ cards:
                   name: Box Humidity
                   no_card: true
                 - type: tile
-                  entity: sensor.powerwall_battery_capacity_remaining
-                  name: Capacity
+                  entity: sensor.powerwall_battery_controller_temperature
+                  name: ESP Temp
                   no_card: true
                 - type: tile
                   entity: binary_sensor.powerwall_battery_balancing
@@ -283,8 +283,8 @@ cards:
                   name: Ext. Balancing
                   no_card: true
                 - type: tile
-                  entity: sensor.powerwall_battery_adjusted_soc
-                  name: Adjusted SoC
+                  entity: sensor.powerwall_battery_capacity_remaining
+                  name: Capacity
                   no_card: true
                 - type: tile
                   entity: sensor.powerwall_battery_rssi
