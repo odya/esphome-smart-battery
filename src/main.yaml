@@ -6,7 +6,7 @@ esphome:
     - "${device_name}/helpers"
   project:
     name: "odya.esphome-smart-battery"
-    version: 1.6.1
+    version: 1.6.2
 
 packages:
   bms: !include {
