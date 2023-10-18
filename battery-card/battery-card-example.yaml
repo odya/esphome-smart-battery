@@ -242,7 +242,7 @@ cards:
             card:
               type: grid
               no_card: true
-              columns: 3
+              columns: 2
               square: false
               card_mod:
                 style: |
@@ -263,16 +263,16 @@ cards:
                   name: Temp 3
                   no_card: true
                 - type: tile
+                  entity: sensor.powerwall_battery_controller_temperature
+                  name: ESP Temp
+                  no_card: true
+                - type: tile
                   entity: sensor.powerwall_battery_box_temperature
                   name: Box Temp
                   no_card: true
                 - type: tile
                   entity: sensor.powerwall_battery_box_humidity
                   name: Box Humidity
-                  no_card: true
-                - type: tile
-                  entity: sensor.powerwall_battery_controller_temperature
-                  name: ESP Temp
                   no_card: true
                 - type: tile
                   entity: binary_sensor.powerwall_battery_balancing
@@ -283,10 +283,6 @@ cards:
                   name: Ext. Balancing
                   no_card: true
                 - type: tile
-                  entity: sensor.powerwall_battery_capacity_remaining
-                  name: Capacity
-                  no_card: true
-                - type: tile
                   entity: sensor.powerwall_battery_rssi
                   name: RSSI
                   no_card: true
@@ -294,6 +290,10 @@ cards:
                   entity: sensor.powerwall_battery_bms_ble_rssi
                   name: BMS RSSI
                   icon: mdi:bluetooth-audio
+                  no_card: true
+                - type: tile
+                  entity: sensor.powerwall_battery_capacity_remaining
+                  name: Capacity
                   no_card: true
                 - type: tile
                   entity: sensor.powerwall_battery_uptime
