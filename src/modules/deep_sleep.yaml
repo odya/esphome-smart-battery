@@ -1,0 +1,70 @@
+globals:
+  - id: deep_sleep_mode
+    type: bool
+    initial_value: "false"
+    restore_value: yes
+
+esphome:
+  on_boot:
+    - priority: -100
+      then:
+        - lambda: |-
+            if (!id(deep_sleep_mode)) {
+              id(deep_sleep_mode_off).execute();
+            }
+
+deep_sleep:
+  run_duration: ${deep_sleep_run_duration}
+  sleep_duration: ${deep_sleep_sleep_duration}
+  id: deep_sleep_1
+  wakeup_pin:
+    number: ${button1_pin}
+    inverted: true
+    mode: INPUT_PULLUP
+  wakeup_pin_mode: INVERT_WAKEUP
+
+script:
+  - id: deep_sleep_mode_off
+    then:
+      - logger.log: "deep_sleep_mode OFF"
+      - deep_sleep.prevent: deep_sleep_1
+      - globals.set:
+          id: deep_sleep_mode
+          value: "false"
+      - lambda: id(deep_sleep_mode_sensor).publish_state(false);
+      - script.execute: show_exit_deep_sleep_mode_page
+      - wait_until:
+          api.connected:
+      - homeassistant.service:
+          service: notify.notify
+          data:
+            title: "⚡️*${node_name}*"
+            message: "Deep Sleep mode OFF"
+      - script.wait: show_exit_deep_sleep_mode_page
+
+  - id: deep_sleep_mode_on
+    then:
+      - logger.log: "deep_sleep_mode ON"
+      - script.execute: show_enter_deep_sleep_mode_page
+      - script.wait: show_enter_deep_sleep_mode_page
+      - homeassistant.service:
+          service: notify.notify
+          data:
+            title: "⚡️*${node_name}*"
+            message: "Deep Sleep mode ON"
+      - globals.set:
+          id: deep_sleep_mode
+          value: "true"
+      - lambda: id(deep_sleep_mode_sensor).publish_state(true);
+      - deep_sleep.allow: deep_sleep_1
+      - deep_sleep.enter: deep_sleep_1
+
+binary_sensor:
+  - platform: template
+    name: Deep Sleep Mode
+    id: deep_sleep_mode_sensor
+    setup_priority: 200
+    lambda: |-
+      return id(deep_sleep_mode);
+
+    

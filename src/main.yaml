@@ -6,7 +6,7 @@ esphome:
     - "${device_name}/helpers"
   project:
     name: "odya.esphome-smart-battery"
-    version: 1.6.2
+    version: 1.6.3
 
 packages:
   bms: !include {
@@ -17,6 +17,9 @@ packages:
   }
   display: !include {
     file: modules/display.yaml
+  }
+  deep_sleep: !include {
+    file: modules/deep_sleep.yaml
   }
   debug: !include modules/debug.yaml
 
@@ -33,14 +36,18 @@ i2c:
 #  frequency: 100kHz
   scan: false
 
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+
 sensor:
   - platform: htu21d
     temperature:
       name: "Box Temperature"
     humidity:
       name: "Box Humidity"
-    update_interval: 10s
+    update_interval: ${sensors_update_interval}
 
   - platform: internal_temperature
     name: "Controller Temperature"
-    update_interval: 10s
+    update_interval: ${sensors_update_interval}

@@ -90,6 +90,19 @@ cards:
         ha-card {
           margin: 10px 0;
         }
+  - type: conditional
+    conditions:
+      - entity: binary_sensor.powerwall_battery_deep_sleep_mode
+        state: 'on'
+    card:
+      type: markdown
+      content: >
+        <ha-alert alert-type="warning">The battery is in deep sleep mode
+        now!</ha-alert>
+      style: |
+        ha-card {
+          margin: 0px 0;
+        }
   - type: custom:stack-in-card
     mode: vertical
     no_card: true
@@ -299,4 +312,10 @@ cards:
                   entity: sensor.powerwall_battery_uptime
                   name: Uptime
                   no_card: true
+                - type: tile
+                  entity: binary_sensor.powerwall_battery_deep_sleep_mode
+                  name: Deep Sleep
+                  no_card: true
+                  icon_tap_action:
+                    action: more-info
               state_color: true
