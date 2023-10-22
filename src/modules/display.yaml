@@ -1,64 +1,80 @@
 esphome:
   on_boot:
-    priority: -200
-    then:
-      - lambda: |-
-          if(id(my_display).is_ready()) {
-            id(wake_scroll_screens_sleep).execute();
-          }
+    - priority: 250
+      then:
+        - lambda: |-
+            id(my_display).turn_off();
+            if (id(my_display).is_ready() && !id(deep_sleep_mode)) {
+              id(wake_scroll_screens_sleep).execute();
+            }
+
 script:
   - id: wake_scroll_screens_sleep
+    mode: restart
     then:
-      - display.page.show: page1
-      - component.update: my_display
       - lambda: |-
           id(my_display).turn_on();
-      - delay: 10s
       - repeat:
-          count: 3
+          count: 2
           then:
-            - display.page.show_next: my_display
+            - display.page.show: page1
+            - component.update: my_display
+            - delay: 10s
+            - display.page.show: page2
+            - component.update: my_display
             - delay: 10s
       - lambda: |-
           id(my_display).turn_off();
 
-interval:
-  - interval: 2s
+  - id: show_enter_deep_sleep_mode_page
     then:
-      - lambda: |-
-          if (id(my_display).is_on() && id(my_display).is_ready()) {
-            id(my_display).update();
-          }
+      - script.stop: wake_scroll_screens_sleep
+      - lambda: id(my_display).turn_on();
+      - display.page.show: page_deep_sleep_enter
+      - component.update: my_display
+      - delay: 10s
+      - lambda: id(my_display).turn_off();
+
+  - id: show_exit_deep_sleep_mode_page
+    then:
+      - script.stop: wake_scroll_screens_sleep
+      - lambda: id(my_display).turn_on();
+      - display.page.show: page_deep_sleep_exit
+      - component.update: my_display
+      - delay: 5s
+      - script.execute: wake_scroll_screens_sleep
 
 binary_sensor:
   - platform: gpio
     name: "Button 1"
     id: button_1
     pin:
-      number: GPIO26
+      number: ${button1_pin}
       inverted: true
       mode:
         input: true
         pullup: true
     entity_category: diagnostic
     filters:
-      - delayed_on_off: 300ms
-    on_click:
-      min_length: 100ms
-      max_length: 3000ms
-      then:
-        - lambda: ESP_LOGI("display_button", "Clicked");
-        - script.execute: wake_scroll_screens_sleep
-
-button:
-  # Debug button
-  - platform: template
-    name: "Button Click"
+      - delayed_on_off: 100ms
     on_press:
-      - lambda: |-
-          id(button_1).publish_state(true);
-          delay(500);
-          id(button_1).publish_state(false);
+      then:
+        - lambda: |-
+            ESP_LOGI("display_button", "Pressed");
+            if (id(deep_sleep_mode)) {
+              id(deep_sleep_mode_off).execute();
+            }
+    on_click:
+      - min_length: 100ms
+        max_length: 3000ms
+        then:
+          - lambda: ESP_LOGI("display_button", "Short Clicked");
+          - script.execute: wake_scroll_screens_sleep
+      - min_length: 5000ms
+        max_length: 15000ms
+        then:
+          - lambda: ESP_LOGI("display_button", "Long clicked");
+          - script.execute: deep_sleep_mode_on
 
 font:
   - file: "gfonts://Roboto@bold"
@@ -173,4 +189,15 @@ display:
           renderCellRow(it, id(font_roboto_s), 8, id(cell_voltage_8).state);
           
           it.print(10, 113, id(font_mdi_xs), "󰇂"); 
-          it.printf(24, 110, id(font_roboto_s), "%3.2fV", id(delta_cell_voltage).state);
+          it.printf(24, 110, id(font_roboto_s), "%3.0fmV", id(delta_cell_voltage).state);
+
+      - id: page_deep_sleep_enter
+        lambda: |-
+          it.printf(0, 20, id(font_roboto_s), "Deep Sleep");
+          it.printf(0, 50, id(font_roboto_s), "mode ON");
+          it.printf(0, 80, id(font_roboto_s), "in 10sec");
+
+      - id: page_deep_sleep_exit
+        lambda: |-
+          it.printf(0, 20, id(font_roboto_s), "Deep Sleep");
+          it.printf(0, 50, id(font_roboto_s), "mode OFF");

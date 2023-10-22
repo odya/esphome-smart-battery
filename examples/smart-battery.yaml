@@ -6,11 +6,16 @@ substitutions:
   cell_volt_limit_min: "2.8" # Must be equal to BMS config setting
   cell_volt_limit_max: "3.388" # Must be equal to BMS config setting
   balancer_relay_pin: GPIO25
+  button1_pin: GPIO26
   i2c_sda_pin: GPIO21
   i2c_scl_pin: GPIO22
   balancer_start_delta_mv: "20.0"
   balancer_stop_delta_mv: "10.0"
   balancer_min_work_time: 20min
+  deep_sleep_run_duration: 60s
+  deep_sleep_sleep_duration: 1h
+  sensors_update_interval: 30s
+
 
 esp32:
   board: nodemcu-32s
@@ -24,7 +29,8 @@ packages:
   common_sensors: !include includes/common_sensors.yaml
 
 logger:
-  level: WARN
+  level: INFO
   logs:
     component: ERROR # Fix for issue #4717 "Component xxxxxx took a long time for an operation"
+    jbd_bms_ble: ERROR
 
