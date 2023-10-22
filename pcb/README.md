@@ -1,8 +1,10 @@
 # ESPHome Smart Battery Hardware
 
-OSHWLab Project: https://oshwlab.com/ganzevich/esphome-smart-battery
+Example hardware setup:
+![Overview diagram](SmartBattery.drawio.svg)
 
 ## Controller PCB:
+- [OSHWLab Project](https://oshwlab.com/ganzevich/esphome-smart-battery)
 - [Schematic](Schematic_ESPHome%20Smart%20Battery.pdf)
 - [BOM](BOM_ESPHome%20Smart%20Battery.csv)
 - [Gerber](Gerber_PCB_Smart%20Battery%20AIO.zip)
@@ -12,4 +14,5 @@ OSHWLab Project: https://oshwlab.com/ganzevich/esphome-smart-battery
 - [PCB Bottom View](pcb_bottom.png)
   <img src="pcb_bottom.png" alt="PCB Bottom" width="500" height="auto">
 
-![Alt text](SmartBattery.drawio.svg)
+## Example Build-Up Photos
+[16 files](photos)
