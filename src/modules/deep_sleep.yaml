@@ -67,4 +67,8 @@ binary_sensor:
     lambda: |-
       return id(deep_sleep_mode);
 
-    
+button:
+  - platform: template
+    name: Enter Deep Sleep
+    on_press:
+      - script.execute: deep_sleep_mode_on

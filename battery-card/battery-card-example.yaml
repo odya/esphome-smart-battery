@@ -116,7 +116,7 @@ cards:
         tabs:
           - attributes:
               label: General
-              icon: mdi:chart-bell-curve-cumulative
+              icon: mdi:amplifier
             card:
               type: vertical-stack
               cards:
@@ -250,8 +250,8 @@ cards:
                     title: inside
                     value: inside
           - attributes:
-              label: Sensors
-              icon: mdi:eye-check
+              label: Other
+              icon: mdi:eye
             card:
               type: grid
               no_card: true
@@ -315,6 +315,10 @@ cards:
                 - type: tile
                   entity: binary_sensor.powerwall_battery_deep_sleep_mode
                   name: Deep Sleep
+                  no_card: true
+                - type: tile
+                  entity: button.powerwall_battery_enter_deep_sleep
+                  name: Enter Deep Sleep
                   no_card: true
                   icon_tap_action:
                     action: more-info
