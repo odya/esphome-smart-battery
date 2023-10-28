@@ -51,12 +51,10 @@ binary_sensor:
     pin:
       number: ${button1_pin}
       inverted: true
-      mode:
-        input: true
-        pullup: true
+      mode: INPUT_PULLUP
     entity_category: diagnostic
     filters:
-      - delayed_on_off: 100ms
+      - delayed_on_off: 200ms
     on_press:
       then:
         - lambda: |-
@@ -66,7 +64,7 @@ binary_sensor:
             }
     on_click:
       - min_length: 100ms
-        max_length: 3000ms
+        max_length: 4999ms
         then:
           - lambda: ESP_LOGI("display_button", "Short Clicked");
           - script.execute: wake_scroll_screens_sleep
