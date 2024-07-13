@@ -52,6 +52,7 @@ binary_sensor:
       number: ${button1_pin}
       inverted: true
       mode: INPUT_PULLUP
+      allow_other_uses: true
     entity_category: diagnostic
     filters:
       - delayed_on_off: 200ms
