@@ -65,6 +65,7 @@ sensor:
     current:
       name: "Current"
       id: current
+      accuracy_decimals: 2
       filters: &numfilters
         - timeout: 60s
     power:
